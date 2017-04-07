@@ -1,0 +1,163 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/jedireza/hapi-react-views"
+
+    >hapi-react-views (v9.2.1)</a>
+</h1>
+<h4>A hapi view engine for React components.</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.hapi-react-views">module hapi-react-views</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.hapi-react-views.compile">
+            function <span class="apidocSignatureSpan">hapi-react-views.</span>compile
+            <span class="apidocSignatureSpan">(template, compileOpts)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.hapi-react-views" id="apidoc.module.hapi-react-views">module hapi-react-views</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.hapi-react-views.compile" id="apidoc.element.hapi-react-views.compile">
+        function <span class="apidocSignatureSpan">hapi-react-views.</span>compile
+        <span class="apidocSignatureSpan">(template, compileOpts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function compile(template, compileOpts) {
+
+    compileOpts = Hoek.applyToDefaults(DEFAULTS, compileOpts);
+
+    return function runtime(context, renderOpts) {
+
+        renderOpts = Hoek.applyToDefaults(compileOpts, renderOpts);
+
+        let View = require(renderOpts.filename);
+        // support for es6 default export semantics
+        View = View.default || View;
+
+        const ViewElement = React.createFactory(View);
+
+        let output = renderOpts.doctype;
+
+        let layoutPath;
+
+        if (renderOpts.layout) {
+            layoutPath = Path.join(renderOpts.layoutPath, renderOpts.layout);
+            let Layout = require(layoutPath);
+            // support for es6 default export semantics
+            Layout = Layout.default || Layout;
+
+            const LayoutElement = React.createFactory(Layout);
+
+            const viewOutput = ReactDOMServer[renderOpts.renderMethod](ViewElement(context));
+
+            output += ReactDOMServer[renderOpts.layoutRenderMethod](LayoutElement(context, viewOutput));
+        }
+        else {
+            output += ReactDOMServer[renderOpts.renderMethod](ViewElement(context));
+        }
+
+<span class="apidocCodeCommentSpan">        /*
+         * Transpilers tend to take a while to start up. Here we delete the
+         * view and layout modules (and any modules matching the
+         * `removeCacheRegExp` pattern) from the require cache so we don&#x27;t need
+         * to restart the app to see view changes.
+         */
+</span>        if (renderOpts.removeCache) {
+            if (renderOpts.layout) {
+                const layoutKey = require.resolve(layoutPath);
+                delete require.cache[layoutKey];
+            }
+
+            const viewKey = require.resolve(renderOpts.filename);
+            delete require.cache[viewKey];
+
+            if (renderOpts.removeCacheRegExp) {
+                const regexp = new RegExp(renderOpts.removeCacheRegExp);
+
+                Object.keys(require.cache).forEach((cacheKey) =&#x3e; {
+
+                    if (regexp.test(cacheKey)) {
+                        delete require.cache[cacheKey];
+                    }
+                });
+            }
+        }
+
+        return output;
+    };
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
