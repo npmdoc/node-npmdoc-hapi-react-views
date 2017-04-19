@@ -1,9 +1,14 @@
-# api documentation for  [hapi-react-views (v9.2.1)](https://github.com/jedireza/hapi-react-views)  [![npm package](https://img.shields.io/npm/v/npmdoc-hapi-react-views.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-hapi-react-views) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-hapi-react-views.svg)](https://travis-ci.org/npmdoc/node-npmdoc-hapi-react-views)
+# npmdoc-hapi-react-views
+
+#### api documentation for  [hapi-react-views (v9.2.1)](https://github.com/jedireza/hapi-react-views)  [![npm package](https://img.shields.io/npm/v/npmdoc-hapi-react-views.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-hapi-react-views) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-hapi-react-views.svg)](https://travis-ci.org/npmdoc/node-npmdoc-hapi-react-views)
+
 #### A hapi view engine for React components.
 
-[![NPM](https://nodei.co/npm/hapi-react-views.png?downloads=true)](https://www.npmjs.com/package/hapi-react-views)
+[![NPM](https://nodei.co/npm/hapi-react-views.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/hapi-react-views)
 
-[![apidoc](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/screenCapture.buildNpmdoc.browser._2Fhome_2Ftravis_2Fbuild_2Fnpmdoc_2Fnode-npmdoc-hapi-react-views_2Ftmp_2Fbuild_2Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/apidoc.html)
+- [https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/apidoc.html](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/apidoc.html)
+
+[![apidoc](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/screenCapture.buildCi.browser.%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/apidoc.html)
 
 ![npmPackageListing](https://npmdoc.github.io/node-npmdoc-hapi-react-views/build/screenCapture.npmPackageListing.svg)
 
@@ -18,7 +23,6 @@
 {
     "author": {
         "name": "Reza Akhavan",
-        "email": "jedireza@gmail.com",
         "url": "http://reza.akhavan.me/"
     },
     "bugs": {
@@ -61,8 +65,7 @@
     "main": "index.js",
     "maintainers": [
         {
-            "name": "jedireza",
-            "email": "jedireza@gmail.com"
+            "name": "jedireza"
         }
     ],
     "name": "hapi-react-views",
@@ -71,7 +74,6 @@
         "react": "15.x.x",
         "react-dom": "15.x.x "
     },
-    "readme": "ERROR: No README data found!",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/jedireza/hapi-react-views.git"
@@ -86,90 +88,6 @@
     },
     "version": "9.2.1"
 }
-```
-
-
-
-# <a name="apidoc.tableOfContents"></a>[table of contents](#apidoc.tableOfContents)
-
-#### [module hapi-react-views](#apidoc.module.hapi-react-views)
-1.  [function <span class="apidocSignatureSpan">hapi-react-views.</span>compile (template, compileOpts)](#apidoc.element.hapi-react-views.compile)
-
-
-
-# <a name="apidoc.module.hapi-react-views"></a>[module hapi-react-views](#apidoc.module.hapi-react-views)
-
-#### <a name="apidoc.element.hapi-react-views.compile"></a>[function <span class="apidocSignatureSpan">hapi-react-views.</span>compile (template, compileOpts)](#apidoc.element.hapi-react-views.compile)
-- description and source-code
-```javascript
-function compile(template, compileOpts) {
-
-    compileOpts = Hoek.applyToDefaults(DEFAULTS, compileOpts);
-
-    return function runtime(context, renderOpts) {
-
-        renderOpts = Hoek.applyToDefaults(compileOpts, renderOpts);
-
-        let View = require(renderOpts.filename);
-        // support for es6 default export semantics
-        View = View.default || View;
-
-        const ViewElement = React.createFactory(View);
-
-        let output = renderOpts.doctype;
-
-        let layoutPath;
-
-        if (renderOpts.layout) {
-            layoutPath = Path.join(renderOpts.layoutPath, renderOpts.layout);
-            let Layout = require(layoutPath);
-            // support for es6 default export semantics
-            Layout = Layout.default || Layout;
-
-            const LayoutElement = React.createFactory(Layout);
-
-            const viewOutput = ReactDOMServer[renderOpts.renderMethod](ViewElement(context));
-
-            output += ReactDOMServer[renderOpts.layoutRenderMethod](LayoutElement(context, viewOutput));
-        }
-        else {
-            output += ReactDOMServer[renderOpts.renderMethod](ViewElement(context));
-        }
-
-<span class="apidocCodeCommentSpan">        /*
-         * Transpilers tend to take a while to start up. Here we delete the
-         * view and layout modules (and any modules matching the
-         * 'removeCacheRegExp' pattern) from the require cache so we don't need
-         * to restart the app to see view changes.
-         */
-</span>        if (renderOpts.removeCache) {
-            if (renderOpts.layout) {
-                const layoutKey = require.resolve(layoutPath);
-                delete require.cache[layoutKey];
-            }
-
-            const viewKey = require.resolve(renderOpts.filename);
-            delete require.cache[viewKey];
-
-            if (renderOpts.removeCacheRegExp) {
-                const regexp = new RegExp(renderOpts.removeCacheRegExp);
-
-                Object.keys(require.cache).forEach((cacheKey) => {
-
-                    if (regexp.test(cacheKey)) {
-                        delete require.cache[cacheKey];
-                    }
-                });
-            }
-        }
-
-        return output;
-    };
-}
-```
-- example usage
-```shell
-n/a
 ```
 
 
